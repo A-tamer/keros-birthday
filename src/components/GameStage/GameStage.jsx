@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { quizQuestions, MONEY_LADDER, TIMER_SECONDS } from '../../content/quiz'
-import { playSound, startBackgroundMusic, stopBackgroundMusic, startTickSound, stopTickSound } from '../../lib/sounds'
+import { quizQuestions, TIMER_SECONDS } from '../../content/quiz'
+import { playSound, startTickSound, stopTickSound } from '../../lib/sounds'
 import { fireBurst } from '../../lib/confetti'
-import MoneyLadder from './MoneyLadder'
+import ProgressMap from './ProgressMap'
 import './GameStage.css'
 
 const LETTERS = ['A', 'B', 'C', 'D']
@@ -14,18 +14,10 @@ export default function GameStage({ onWin }) {
   const [revealed, setRevealed] = useState(false)
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS)
   const [timerActive, setTimerActive] = useState(true)
-  const [showLadder, setShowLadder] = useState(false)
   const timerRef = useRef(null)
   const question = quizQuestions[index]
   const isLast = index === quizQuestions.length - 1
 
-  useEffect(() => {
-    const t = setTimeout(() => startBackgroundMusic(), 100)
-    return () => {
-      clearTimeout(t)
-      stopBackgroundMusic()
-    }
-  }, [])
 
   useEffect(() => {
     setSelected(null)
@@ -56,25 +48,20 @@ export default function GameStage({ onWin }) {
 
   const handleSelect = useCallback((optIdx) => {
     if (selected !== null || revealed) return
+    const correct = optIdx === question.correctIndex
+    playSound(correct ? 'correct' : 'wrong')
     setSelected(optIdx)
     setTimerActive(false)
     stopTickSound()
 
     setTimeout(() => {
       setRevealed(true)
-      const correct = optIdx === question.correctIndex
-      if (correct) {
-        playSound('correct')
-        fireBurst(40)
-      } else {
-        playSound('wrong')
-      }
+      if (correct) fireBurst(40)
     }, 1500)
   }, [selected, revealed, question])
 
   const handleNext = () => {
     if (isLast) {
-      stopBackgroundMusic()
       playSound('final')
       onWin()
     } else {
@@ -98,40 +85,7 @@ export default function GameStage({ onWin }) {
 
   return (
     <div className="game-stage">
-      <button
-        className="game-ladder-toggle"
-        onClick={() => setShowLadder((s) => !s)}
-      >
-        {showLadder ? 'Close' : 'Prize'} {MONEY_LADDER[index]}
-      </button>
-
-      <AnimatePresence>
-        {showLadder && (
-          <motion.div
-            key="ladder-backdrop"
-            className="game-ladder-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setShowLadder(false)}
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {showLadder && (
-          <motion.div
-            key="ladder-panel"
-            className="game-ladder-overlay"
-            initial={{ opacity: 0, x: 200 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 200 }}
-            transition={{ duration: 0.3 }}
-          >
-            <MoneyLadder currentIndex={index} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ProgressMap total={quizQuestions.length} current={index} />
 
       {/* Timer */}
       <div className="game-timer-wrap">
@@ -217,7 +171,7 @@ export default function GameStage({ onWin }) {
               >
                 {isCorrect && (
                   <div className="game-feedback-correct">
-                    Correct! You've won <strong>{MONEY_LADDER[index]}</strong>
+                    Correct! On to the next.
                   </div>
                 )}
                 {isWrong && (

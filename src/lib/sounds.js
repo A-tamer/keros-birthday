@@ -1,161 +1,60 @@
-let audioCtx = null
-let muted = false
-let bgMusic = null
-let tickInterval = null
-let unlocked = false
-
-function getCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-  }
-  return audioCtx
+const SOUND_URLS = {
+  correct: '/sounds/true-answer.mp3',
+  wrong: '/sounds/false-answer.mp3',
+  final: '/sounds/true-answer.mp3',
 }
 
-function ensureUnlocked() {
-  const ctx = getCtx()
-  if (ctx.state === 'suspended') {
-    ctx.resume().catch(() => {})
-  }
-  if (!unlocked) {
-    unlocked = true
-    const buf = ctx.createBuffer(1, 1, 22050)
-    const src = ctx.createBufferSource()
-    src.buffer = buf
-    src.connect(ctx.destination)
-    src.start(0)
-  }
-}
+const cache = {}
 
-function playTone(freq, duration, type = 'sine', volume = 0.3) {
-  if (muted) return
-  try {
-    const ctx = getCtx()
-    if (ctx.state === 'suspended') return
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = type
-    osc.frequency.setValueAtTime(freq, ctx.currentTime)
-    gain.gain.setValueAtTime(volume, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.start()
-    osc.stop(ctx.currentTime + duration)
-  } catch {}
-}
-
-function playChord(freqs, duration, type = 'sine', volume = 0.15) {
-  freqs.forEach((f) => playTone(f, duration, type, volume))
-}
-
-const SOUNDS = {
-  correct() {
-    playChord([523.25, 659.25, 783.99], 0.15, 'sine', 0.2)
-    setTimeout(() => playChord([659.25, 783.99, 1046.5], 0.3, 'sine', 0.2), 150)
-  },
-  wrong() {
-    playTone(200, 0.15, 'square', 0.2)
-    setTimeout(() => playTone(150, 0.4, 'square', 0.15), 150)
-  },
-  final() {
-    const notes = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5]
-    notes.forEach((f, i) => {
-      setTimeout(() => playTone(f, 0.3, 'sine', 0.2), i * 120)
-    })
-  },
-  tick() {
-    playTone(800, 0.05, 'square', 0.1)
-  },
+function getAudio(key) {
+  if (cache[key]) return cache[key]
+  const audio = new Audio(SOUND_URLS[key])
+  audio.preload = 'auto'
+  cache[key] = audio
+  return audio
 }
 
 export function preloadSounds() {
   try {
-    ensureUnlocked()
+    getAudio('correct').load()
+    getAudio('wrong').load()
+    getAudio('final').load()
   } catch {}
 }
 
+/**
+ * Play a sound. Call this directly from a user gesture (e.g. click) on mobile so it's allowed.
+ */
 export function playSound(key) {
-  if (muted) return
-  try { SOUNDS[key]?.() } catch {}
+  try {
+    const audio = getAudio(key)
+    if (!audio || !SOUND_URLS[key]) return
+    audio.currentTime = 0
+    audio.volume = 0.8
+    audio.play().catch(() => {})
+  } catch {}
 }
 
 export function startBackgroundMusic() {
-  if (muted) return
-  try {
-    const ctx = getCtx()
-    if (ctx.state === 'suspended' || bgMusic) return
-
-    const bpm = 100
-    const beat = 60 / bpm
-    let nextTime = ctx.currentTime + 0.05
-    const bassLine = [130.81, 146.83, 164.81, 174.61, 164.81, 146.83]
-    let bassIdx = 0
-    let running = true
-
-    function scheduleBass() {
-      if (!running || muted) return
-      const now = ctx.currentTime
-      while (nextTime < now + 0.5) {
-        const freq = bassLine[bassIdx % bassLine.length]
-        const osc = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.type = 'triangle'
-        osc.frequency.setValueAtTime(freq, nextTime)
-        gain.gain.setValueAtTime(0.06, nextTime)
-        gain.gain.exponentialRampToValueAtTime(0.001, nextTime + beat * 0.9)
-        osc.connect(gain)
-        gain.connect(ctx.destination)
-        osc.start(nextTime)
-        osc.stop(nextTime + beat)
-        bassIdx++
-        nextTime += beat
-      }
-      bgMusic._raf = requestAnimationFrame(scheduleBass)
-    }
-
-    bgMusic = {
-      _raf: null,
-      stop() {
-        running = false
-        if (this._raf) cancelAnimationFrame(this._raf)
-      },
-    }
-    scheduleBass()
-  } catch {}
+  /* removed - no background audio */
 }
 
 export function stopBackgroundMusic() {
-  if (bgMusic) {
-    bgMusic.stop()
-    bgMusic = null
-  }
+  /* removed */
 }
 
 export function startTickSound() {
-  if (muted || tickInterval) return
-  tickInterval = setInterval(() => {
-    if (!muted) SOUNDS.tick()
-  }, 1000)
+  /* removed - no tick */
 }
 
 export function stopTickSound() {
-  if (tickInterval) {
-    clearInterval(tickInterval)
-    tickInterval = null
-  }
+  /* removed */
 }
 
 export function toggleMute() {
-  muted = !muted
-  if (muted) {
-    stopBackgroundMusic()
-    stopTickSound()
-  } else {
-    ensureUnlocked()
-  }
-  return muted
+  return false
 }
 
 export function isMuted() {
-  return muted
+  return false
 }

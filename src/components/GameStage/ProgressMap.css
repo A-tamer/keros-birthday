@@ -1,0 +1,85 @@
+.progress-map {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 1rem;
+}
+
+.progress-map-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  position: relative;
+}
+
+.progress-map-step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 28px;
+}
+
+.progress-map-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  z-index: 2;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.progress-map-step--done .progress-map-dot {
+  background: var(--accent-green);
+  border-color: rgba(34, 197, 94, 0.8);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+.progress-map-step--current .progress-map-dot {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold-light);
+  box-shadow: 0 0 16px rgba(212, 160, 32, 0.6);
+}
+
+.progress-map-connector {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: calc(100% - 12px);
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scaleX(0);
+  transform-origin: left center;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.progress-map-step--done .progress-map-connector {
+  background: linear-gradient(90deg, var(--accent-green), rgba(34, 197, 94, 0.6));
+}
+
+.progress-map-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.progress-map-done-label {
+  color: var(--accent-green);
+}
+
+.progress-map-left-label {
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-map-step {
+    animation: none;
+  }
+}

@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import TitleScreen from './components/TitleScreen/TitleScreen'
 import GameStage from './components/GameStage/GameStage'
 import WinScreen from './components/WinScreen/WinScreen'
-import MuteButton from './components/MuteButton'
 import Confetti from './components/Confetti/Confetti'
 import Footer from './components/Footer/Footer'
 import { preloadSounds } from './lib/sounds'
@@ -15,7 +14,6 @@ export default function App() {
 
   const handleStart = useCallback(() => {
     preloadSounds()
-    import('./lib/sounds').then(({ startBackgroundMusic }) => startBackgroundMusic())
     setScreen('game')
   }, [])
 
@@ -26,7 +24,6 @@ export default function App() {
 
   return (
     <div className="app">
-      <MuteButton />
       <Confetti active={won} />
 
       <AnimatePresence mode="wait">

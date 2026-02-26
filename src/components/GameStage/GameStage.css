@@ -9,54 +9,6 @@
   width: 100%;
 }
 
-/* Ladder toggle */
-.game-ladder-toggle {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.6em 1.1em;
-  min-height: 44px;
-  min-width: 44px;
-  border-radius: 999px;
-  border: 1px solid var(--accent-gold);
-  background: rgba(212, 160, 32, 0.1);
-  color: var(--accent-gold-light);
-  cursor: pointer;
-  z-index: 40;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3em;
-}
-
-.game-ladder-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 29;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.game-ladder-overlay {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(280px, 80vw);
-  background: rgba(6, 6, 32, 0.97);
-  border-left: 2px solid var(--accent-gold);
-  z-index: 30;
-  padding: 3rem 1rem calc(1rem + var(--safe-bottom));
-  overflow-y: auto;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
 /* Timer */
 .game-timer-wrap {
   position: relative;
