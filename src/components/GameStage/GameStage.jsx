@@ -102,7 +102,7 @@ export default function GameStage({ onWin }) {
         className="game-ladder-toggle"
         onClick={() => setShowLadder((s) => !s)}
       >
-        {showLadder ? '✕' : '💰'} {MONEY_LADDER[index]}
+        {showLadder ? 'Close' : 'Prize'} {MONEY_LADDER[index]}
       </button>
 
       <AnimatePresence>
@@ -217,17 +217,17 @@ export default function GameStage({ onWin }) {
               >
                 {isCorrect && (
                   <div className="game-feedback-correct">
-                    ✓ Correct! You've won <strong>{MONEY_LADDER[index]}</strong>
+                    Correct! You've won <strong>{MONEY_LADDER[index]}</strong>
                   </div>
                 )}
                 {isWrong && (
                   <div className="game-feedback-wrong">
-                    ✗ Wrong answer! The correct answer was <strong>{LETTERS[question.correctIndex]}</strong>
+                    Wrong answer! The correct answer was <strong>{LETTERS[question.correctIndex]}</strong>
                   </div>
                 )}
                 {isTimeout && (
                   <div className="game-feedback-wrong">
-                    ⏰ Time's up! The correct answer was <strong>{LETTERS[question.correctIndex]}</strong>
+                    Time's up! The correct answer was <strong>{LETTERS[question.correctIndex]}</strong>
                   </div>
                 )}
 
@@ -241,7 +241,7 @@ export default function GameStage({ onWin }) {
                     >
                       {isCorrect
                         ? isLast
-                          ? '🎉 Reveal the Code!'
+                          ? 'Reveal the Code!'
                           : 'Next Question →'
                         : 'Try Again'}
                     </motion.button>

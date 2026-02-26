@@ -29,3 +29,9 @@
 .mute-btn:active {
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+.mute-btn-icon {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}

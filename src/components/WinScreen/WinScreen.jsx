@@ -9,8 +9,9 @@ export default function WinScreen() {
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+        aria-hidden
       >
-        🏆
+        <span className="win-badge-text">Trophy</span>
       </motion.div>
 
       <motion.h1
@@ -60,7 +61,7 @@ export default function WinScreen() {
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
       >
-        🎂 Happy Birthday, Kero! 🎂
+        Happy Birthday, Keroooo!
       </motion.p>
     </div>
   )

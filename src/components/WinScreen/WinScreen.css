@@ -15,9 +15,17 @@
 }
 
 .win-badge {
-  font-size: clamp(3.5rem, 12vw, 5rem);
   line-height: 1;
   filter: drop-shadow(0 0 30px rgba(212, 160, 32, 0.5));
+}
+
+.win-badge-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  color: var(--accent-gold-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .win-title {

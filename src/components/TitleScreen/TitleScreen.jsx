@@ -62,25 +62,43 @@ export default function TitleScreen({ onStart }) {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
-        <motion.div
-          className="hero-photo-wrap"
-          initial={{ y: -30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6, type: 'spring', stiffness: 200 }}
-        >
-          <img src="/hero.png" alt="Happy Birthday Kero" className="hero-photo" />
-        </motion.div>
-
         <motion.h1
           className="hero-title"
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
         >
           <span className="hero-title-line">HAPPY</span>
-          <span className="hero-title-line">BIRTHDAY</span>
-          <span className="hero-title-name">KERO! 🎂</span>
+          <span className="hero-title-line hero-title-line--birthday">BIRTHDAY</span>
         </motion.h1>
+
+        <motion.div
+          className="hero-photo-wrap"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{
+            y: [0, -14, 0],
+            opacity: 1,
+          }}
+          transition={{
+            opacity: { duration: 0.6, delay: 0.5 },
+            y: {
+              duration: 3.5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            },
+          }}
+        >
+          <img src="/hero.png" alt="Keroooo" className="hero-photo" />
+        </motion.div>
+
+        <motion.span
+          className="hero-title-name"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+        >
+          Keroooo!
+        </motion.span>
 
         <motion.p
           className="hero-subtitle"
@@ -102,8 +120,7 @@ export default function TitleScreen({ onStart }) {
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
             >
-              <span className="hero-play-btn-icon">🎮</span>
-              <span>LET'S PLAY!</span>
+              LET'S PLAY!
             </motion.button>
           )}
         </AnimatePresence>
