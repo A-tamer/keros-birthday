@@ -15,6 +15,7 @@ export default function App() {
 
   const handleStart = useCallback(() => {
     preloadSounds()
+    import('./lib/sounds').then(({ startBackgroundMusic }) => startBackgroundMusic())
     setScreen('game')
   }, [])
 

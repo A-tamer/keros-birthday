@@ -31,6 +31,10 @@
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 html {
@@ -40,12 +44,18 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: 'Outfit', system-ui, sans-serif;
   background: radial-gradient(ellipse at 50% 30%, #141452 0%, #0a0a2e 40%, #060620 100%);
   background-attachment: fixed;
   color: var(--text-bright);
   overflow-x: hidden;
+  overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
 }
 
 body::before {
@@ -62,13 +72,18 @@ body::before {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.75rem;
   overflow-y: auto;
 }
 
 @media (min-width: 480px) {
   #root { padding: 1.5rem; }
+}
+
+button {
+  font-family: inherit;
 }

@@ -2,26 +2,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0.5rem 2rem;
+  padding: 0.5rem 0.5rem 2rem;
   min-height: 85vh;
+  min-height: 85dvh;
   position: relative;
+  width: 100%;
 }
 
 /* Ladder toggle */
 .game-ladder-toggle {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.25rem;
+  right: 0.25rem;
   font-family: 'Outfit', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
-  padding: 0.5em 1em;
+  padding: 0.6em 1.1em;
+  min-height: 44px;
+  min-width: 44px;
   border-radius: 999px;
   border: 1px solid var(--accent-gold);
   background: rgba(212, 160, 32, 0.1);
   color: var(--accent-gold-light);
   cursor: pointer;
   z-index: 40;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+}
+
+.game-ladder-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 29;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -34,17 +51,27 @@
   background: rgba(6, 6, 32, 0.97);
   border-left: 2px solid var(--accent-gold);
   z-index: 30;
-  padding: 3rem 1rem 1rem;
+  padding: 3rem 1rem calc(1rem + var(--safe-bottom));
   overflow-y: auto;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* Timer */
 .game-timer-wrap {
   position: relative;
-  width: 80px;
-  height: 80px;
-  margin-bottom: 0.75rem;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+  .game-timer-wrap {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0.75rem;
+  }
 }
 
 .game-timer-svg {
@@ -61,8 +88,12 @@
   justify-content: center;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--text-bright);
+}
+
+@media (min-width: 480px) {
+  .game-timer-text { font-size: 1.5rem; }
 }
 
 .game-timer-text--danger {
@@ -77,12 +108,16 @@
 
 /* Question number */
 .game-question-num {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-dim);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 480px) {
+  .game-question-num { font-size: 0.8rem; margin-bottom: 0.75rem; }
 }
 
 /* Question box */
@@ -93,22 +128,29 @@
 
 .game-question-box {
   background: linear-gradient(180deg, rgba(30, 58, 138, 0.5) 0%, rgba(10, 10, 46, 0.8) 100%);
-  padding: 1.25rem 2rem;
-  margin-bottom: 1rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 0.75rem;
   text-align: center;
   clip-path: polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
   filter: drop-shadow(0 0 1px rgba(100, 150, 255, 0.5)) drop-shadow(0 0 20px rgba(59, 108, 245, 0.1));
 }
 
+@media (max-width: 400px) {
+  .game-question-box {
+    clip-path: polygon(3% 0%, 97% 0%, 100% 50%, 97% 100%, 3% 100%, 0% 50%);
+    padding: 0.9rem 1.2rem;
+  }
+}
+
 .game-question-text {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
-  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
   line-height: 1.5;
   color: var(--text-bright);
 }
 
-/* Options — 2×2 grid */
+/* Options */
 .game-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -118,6 +160,7 @@
 @media (max-width: 500px) {
   .game-options {
     grid-template-columns: 1fr;
+    gap: 0.4rem;
   }
 }
 
@@ -126,10 +169,10 @@
   display: flex;
   align-items: center;
   gap: 0.6em;
-  padding: 0.85em 1.4em 0.85em 1.2em;
-  min-height: 52px;
+  padding: 0.9em 1.4em 0.9em 1.2em;
+  min-height: 48px;
   font-family: 'Outfit', sans-serif;
-  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  font-size: clamp(0.88rem, 2.5vw, 0.95rem);
   font-weight: 500;
   text-align: left;
   background: linear-gradient(135deg, rgba(20, 30, 80, 0.85) 0%, rgba(10, 15, 50, 0.9) 100%);
@@ -143,9 +186,23 @@
   filter: drop-shadow(0 0 1px rgba(100, 150, 255, 0.5)) drop-shadow(0 0 4px rgba(59, 108, 245, 0.15));
 }
 
-.game-option:hover:not(:disabled) {
+@media (max-width: 400px) {
+  .game-option {
+    clip-path: polygon(3% 0%, 97% 0%, 100% 50%, 97% 100%, 3% 100%, 0% 50%);
+    padding: 0.85em 1em 0.85em 0.9em;
+    min-height: 44px;
+  }
+}
+
+@media (hover: hover) {
+  .game-option:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(59, 108, 245, 0.3) 0%, rgba(30, 58, 138, 0.4) 100%);
+    filter: drop-shadow(0 0 1px rgba(212, 160, 32, 0.7)) drop-shadow(0 0 10px rgba(212, 160, 32, 0.2));
+  }
+}
+
+.game-option:active:not(:disabled) {
   background: linear-gradient(135deg, rgba(59, 108, 245, 0.3) 0%, rgba(30, 58, 138, 0.4) 100%);
-  filter: drop-shadow(0 0 1px rgba(212, 160, 32, 0.7)) drop-shadow(0 0 10px rgba(212, 160, 32, 0.2));
 }
 
 .game-option:disabled {
@@ -179,7 +236,7 @@
   font-weight: 700;
   color: var(--accent-gold);
   flex-shrink: 0;
-  min-width: 1.5em;
+  min-width: 1.4em;
 }
 
 .game-option-text {
@@ -188,22 +245,23 @@
 
 /* Feedback */
 .game-feedback {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   text-align: center;
+  padding: 0 0.5rem;
 }
 
 .game-feedback-correct {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--accent-green);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem;
 }
 
 .game-feedback-wrong {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--accent-red);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.6rem;
 }
 
 .game-feedback-actions {
@@ -217,6 +275,7 @@
   font-size: 0.95rem;
   font-weight: 700;
   padding: 0.75em 2em;
+  min-height: 48px;
   border-radius: 999px;
   border: 2px solid var(--accent-gold);
   background: linear-gradient(180deg, rgba(212, 160, 32, 0.2) 0%, rgba(212, 160, 32, 0.05) 100%);
@@ -229,9 +288,15 @@
   touch-action: manipulation;
 }
 
-.game-next-btn:hover {
+@media (hover: hover) {
+  .game-next-btn:hover {
+    background: linear-gradient(180deg, rgba(212, 160, 32, 0.35) 0%, rgba(212, 160, 32, 0.1) 100%);
+    box-shadow: 0 0 40px rgba(212, 160, 32, 0.35);
+  }
+}
+
+.game-next-btn:active {
   background: linear-gradient(180deg, rgba(212, 160, 32, 0.35) 0%, rgba(212, 160, 32, 0.1) 100%);
-  box-shadow: 0 0 40px rgba(212, 160, 32, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {

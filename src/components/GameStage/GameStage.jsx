@@ -20,8 +20,11 @@ export default function GameStage({ onWin }) {
   const isLast = index === quizQuestions.length - 1
 
   useEffect(() => {
-    startBackgroundMusic()
-    return () => stopBackgroundMusic()
+    const t = setTimeout(() => startBackgroundMusic(), 100)
+    return () => {
+      clearTimeout(t)
+      stopBackgroundMusic()
+    }
   }, [])
 
   useEffect(() => {
@@ -105,6 +108,20 @@ export default function GameStage({ onWin }) {
       <AnimatePresence>
         {showLadder && (
           <motion.div
+            key="ladder-backdrop"
+            className="game-ladder-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setShowLadder(false)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showLadder && (
+          <motion.div
+            key="ladder-panel"
             className="game-ladder-overlay"
             initial={{ opacity: 0, x: 200 }}
             animate={{ opacity: 1, x: 0 }}

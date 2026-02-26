@@ -2,17 +2,35 @@ let audioCtx = null
 let muted = false
 let bgMusic = null
 let tickInterval = null
+let unlocked = false
 
 function getCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-  if (audioCtx.state === 'suspended') audioCtx.resume()
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  }
   return audioCtx
+}
+
+function ensureUnlocked() {
+  const ctx = getCtx()
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {})
+  }
+  if (!unlocked) {
+    unlocked = true
+    const buf = ctx.createBuffer(1, 1, 22050)
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    src.connect(ctx.destination)
+    src.start(0)
+  }
 }
 
 function playTone(freq, duration, type = 'sine', volume = 0.3) {
   if (muted) return
   try {
     const ctx = getCtx()
+    if (ctx.state === 'suspended') return
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.type = type
@@ -51,7 +69,9 @@ const SOUNDS = {
 }
 
 export function preloadSounds() {
-  try { getCtx() } catch {}
+  try {
+    ensureUnlocked()
+  } catch {}
 }
 
 export function playSound(key) {
@@ -63,13 +83,11 @@ export function startBackgroundMusic() {
   if (muted) return
   try {
     const ctx = getCtx()
-    if (bgMusic) return
+    if (ctx.state === 'suspended' || bgMusic) return
 
     const bpm = 100
     const beat = 60 / bpm
-    const bar = beat * 4
     let nextTime = ctx.currentTime + 0.05
-
     const bassLine = [130.81, 146.83, 164.81, 174.61, 164.81, 146.83]
     let bassIdx = 0
     let running = true
@@ -132,6 +150,8 @@ export function toggleMute() {
   if (muted) {
     stopBackgroundMusic()
     stopTickSound()
+  } else {
+    ensureUnlocked()
   }
   return muted
 }

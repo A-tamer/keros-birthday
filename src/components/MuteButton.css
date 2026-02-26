@@ -1,9 +1,9 @@
 .mute-btn {
   position: fixed;
-  top: 0.75rem;
-  left: 0.75rem;
-  width: 40px;
-  height: 40px;
+  top: calc(0.5rem + var(--safe-top, 0px));
+  left: calc(0.5rem + var(--safe-left, 0px));
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(10, 10, 46, 0.8);
@@ -14,10 +14,18 @@
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   transition: border-color 0.2s;
+  touch-action: manipulation;
 }
 
-.mute-btn:hover {
+@media (hover: hover) {
+  .mute-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.mute-btn:active {
   border-color: rgba(255, 255, 255, 0.3);
 }
