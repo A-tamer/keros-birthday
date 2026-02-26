@@ -1,0 +1,71 @@
+.money-ladder {
+  width: 100%;
+}
+
+.money-ladder-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  text-align: center;
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.money-ladder-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.money-ladder-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+.money-ladder-num {
+  font-weight: 700;
+  min-width: 1.5em;
+  text-align: right;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+.money-ladder-amount {
+  flex: 1;
+}
+
+.money-ladder-item--safe {
+  color: var(--accent-gold);
+}
+
+.money-ladder-item--safe .money-ladder-num {
+  color: var(--accent-gold);
+}
+
+.money-ladder-item--passed {
+  opacity: 0.4;
+}
+
+.money-ladder-item--current {
+  background: rgba(212, 160, 32, 0.15);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold-light);
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(212, 160, 32, 0.2);
+}
+
+.money-ladder-item--current .money-ladder-num {
+  color: var(--accent-gold-light);
+}
