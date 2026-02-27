@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { quizQuestions, TIMER_SECONDS } from '../../content/quiz'
+import { quizQuestions, finishSentenceQuestions, feenQuestions, TIMER_SECONDS } from '../../content/quiz'
 import { playSound, startTickSound, stopTickSound } from '../../lib/sounds'
 import { fireBurst } from '../../lib/confetti'
 import ProgressMap from './ProgressMap'
@@ -8,26 +8,40 @@ import './GameStage.css'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 
+const whoSaidRounds = quizQuestions.map((q) => ({ ...q, type: 'who-said' }))
+const finishRounds = finishSentenceQuestions.map((q) => ({ ...q, type: 'finish-sentence' }))
+const feenRounds = feenQuestions.map((q) => ({ ...q, type: 'feen' }))
+const allRounds = [...whoSaidRounds, ...finishRounds, ...feenRounds]
+
+function normalizeAnswer(s) {
+  return (s || '').trim().toLowerCase().replace(/\s+/g, ' ')
+}
+
 export default function GameStage({ onWin }) {
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [revealed, setRevealed] = useState(false)
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS)
   const [timerActive, setTimerActive] = useState(true)
+  const [textAnswer, setTextAnswer] = useState('')
+  const [finishCorrect, setFinishCorrect] = useState(null)
   const timerRef = useRef(null)
-  const question = quizQuestions[index]
-  const isLast = index === quizQuestions.length - 1
-
+  const question = allRounds[index]
+  const isWhoSaid = question.type === 'who-said'
+  const isFeen = question.type === 'feen'
+  const isLast = index === allRounds.length - 1
 
   useEffect(() => {
     setSelected(null)
     setRevealed(false)
+    setTextAnswer('')
+    setFinishCorrect(null)
     setTimeLeft(TIMER_SECONDS)
     setTimerActive(true)
   }, [index])
 
   useEffect(() => {
-    if (!timerActive || timeLeft <= 0) return
+    if (!isWhoSaid || !timerActive || timeLeft <= 0) return
     if (timeLeft <= 5) startTickSound()
 
     timerRef.current = setTimeout(() => {
@@ -35,20 +49,24 @@ export default function GameStage({ onWin }) {
     }, 1000)
 
     return () => clearTimeout(timerRef.current)
-  }, [timeLeft, timerActive])
+  }, [isWhoSaid, timeLeft, timerActive])
 
   useEffect(() => {
-    if (timeLeft <= 0 && timerActive) {
+    if (isWhoSaid && timeLeft <= 0 && timerActive) {
       stopTickSound()
       setTimerActive(false)
       setRevealed(true)
       playSound('wrong')
     }
-  }, [timeLeft, timerActive])
+  }, [isWhoSaid, timeLeft, timerActive])
+
+  const isOptionCorrect = useCallback((i) => (
+    question.correctIndices ? question.correctIndices.includes(i) : i === question.correctIndex
+  ), [question])
 
   const handleSelect = useCallback((optIdx) => {
-    if (selected !== null || revealed) return
-    const correct = optIdx === question.correctIndex
+    if (!isWhoSaid || selected !== null || revealed) return
+    const correct = isOptionCorrect(optIdx)
     playSound(correct ? 'correct' : 'wrong')
     setSelected(optIdx)
     setTimerActive(false)
@@ -58,7 +76,15 @@ export default function GameStage({ onWin }) {
       setRevealed(true)
       if (correct) fireBurst(40)
     }, 1500)
-  }, [selected, revealed, question])
+  }, [isWhoSaid, selected, revealed, question, isOptionCorrect])
+
+  const handleFinishSubmit = useCallback(() => {
+    if (question.type !== 'finish-sentence' || revealed) return
+    const normalized = normalizeAnswer(textAnswer)
+    const correct = question.correctAnswers.some((a) => normalizeAnswer(a) === normalized)
+    setFinishCorrect(correct)
+    setRevealed(true)
+  }, [question, textAnswer, revealed])
 
   const handleNext = () => {
     if (isLast) {
@@ -76,18 +102,19 @@ export default function GameStage({ onWin }) {
     setTimerActive(true)
   }
 
-  const isCorrect = revealed && selected === question.correctIndex
-  const isWrong = revealed && selected !== null && selected !== question.correctIndex
-  const isTimeout = revealed && selected === null
+  const isCorrect = isWhoSaid && revealed && selected !== null && isOptionCorrect(selected)
+  const isWrong = isWhoSaid && revealed && selected !== null && !isOptionCorrect(selected)
+  const isTimeout = isWhoSaid && revealed && selected === null
 
   const timerPercent = (timeLeft / TIMER_SECONDS) * 100
   const timerColor = timeLeft <= 5 ? 'var(--accent-red)' : timeLeft <= 10 ? 'var(--accent-orange)' : 'var(--accent-blue-light)'
 
   return (
     <div className="game-stage">
-      <ProgressMap total={quizQuestions.length} current={index} />
+      <ProgressMap total={allRounds.length} current={index} />
 
-      {/* Timer */}
+      {/* Timer – only for Who said */}
+      {isWhoSaid && (
       <div className="game-timer-wrap">
         <svg className="game-timer-svg" viewBox="0 0 100 100">
           <circle
@@ -113,10 +140,11 @@ export default function GameStage({ onWin }) {
           {timeLeft}
         </span>
       </div>
+      )}
 
       {/* Question number */}
       <div className="game-question-num">
-        Question {index + 1} of {quizQuestions.length}
+        Question {index + 1} of {allRounds.length}
       </div>
 
       {/* Question */}
@@ -129,17 +157,24 @@ export default function GameStage({ onWin }) {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4 }}
         >
+          <h2 className="game-section-title">
+            {isWhoSaid ? 'Who said' : isFeen ? 'feeeeeeen?' : 'Finish the sentence'}
+          </h2>
+          {!isFeen && (
           <div className="game-question-box">
             <p className="game-question-text">{question.question}</p>
           </div>
+          )}
 
+          {isWhoSaid ? (
+          <>
           {/* Options */}
           <div className="game-options">
             {question.options.map((opt, i) => {
               let cls = 'game-option'
               if (selected === i && !revealed) cls += ' game-option--selected'
-              if (revealed && i === question.correctIndex) cls += ' game-option--correct'
-              if (revealed && selected === i && i !== question.correctIndex) cls += ' game-option--wrong'
+              if (revealed && isOptionCorrect(i)) cls += ' game-option--correct'
+              if (revealed && selected === i && !isOptionCorrect(i)) cls += ' game-option--wrong'
 
               return (
                 <motion.button
@@ -159,10 +194,68 @@ export default function GameStage({ onWin }) {
               )
             })}
           </div>
+          </>
+          ) : isFeen ? (
+          /* Feen – blurred image, Reveal shows answer image, no input, no sounds */
+          <div className="game-feen-wrap">
+            <div className="game-feen-image-wrap">
+              <img src={question.questionImage} alt="Where?" className="game-feen-image" />
+            </div>
+            {!revealed ? (
+              <motion.button
+                type="button"
+                className="game-feen-reveal-btn"
+                onClick={() => setRevealed(true)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Reveal
+              </motion.button>
+            ) : (
+              <>
+                <div className="game-feen-image-wrap game-feen-answer-wrap">
+                  <img src={question.answerImage} alt="Answer" className="game-feen-image" />
+                </div>
+                <motion.button
+                  className="game-next-btn"
+                  onClick={handleNext}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  {isLast ? 'Reveal the Code!' : 'Next Question →'}
+                </motion.button>
+              </>
+            )}
+          </div>
+          ) : (
+          /* Finish the sentence – free text, no sounds */
+          <div className="game-finish-wrap">
+            <input
+              type="text"
+              className="game-finish-input"
+              placeholder="Type your answer…"
+              value={textAnswer}
+              onChange={(e) => setTextAnswer(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleFinishSubmit()}
+              disabled={revealed}
+              autoComplete="off"
+            />
+            <motion.button
+              type="button"
+              className="game-finish-submit"
+              onClick={handleFinishSubmit}
+              disabled={revealed || !textAnswer.trim()}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Submit
+            </motion.button>
+          </div>
+          )}
 
-          {/* Feedback */}
+          {/* Feedback – not used for feen (answer + Next are in feen block) */}
           <AnimatePresence>
-            {revealed && (
+            {revealed && !isFeen && (
               <motion.div
                 className="game-feedback"
                 initial={{ opacity: 0, y: 10 }}
@@ -176,28 +269,31 @@ export default function GameStage({ onWin }) {
                 )}
                 {isWrong && (
                   <div className="game-feedback-wrong">
-                    Wrong answer! The correct answer was <strong>{LETTERS[question.correctIndex]}</strong>
+                    Wrong answer! The correct answer was <strong>{question.correctIndices ? question.correctIndices.map(idx => LETTERS[idx]).join(' or ') : LETTERS[question.correctIndex]}</strong>
                   </div>
                 )}
                 {isTimeout && (
                   <div className="game-feedback-wrong">
-                    Time's up! The correct answer was <strong>{LETTERS[question.correctIndex]}</strong>
+                    Time's up! The correct answer was <strong>{question.correctIndices ? question.correctIndices.map(idx => LETTERS[idx]).join(' or ') : LETTERS[question.correctIndex]}</strong>
+                  </div>
+                )}
+                {!isWhoSaid && finishCorrect !== null && (
+                  <div className={finishCorrect ? 'game-feedback-correct' : 'game-feedback-wrong'}>
+                    {finishCorrect ? 'Correct! On to the next.' : `Not quite. One possible answer: ${question.correctAnswers[0]}`}
                   </div>
                 )}
 
                 <div className="game-feedback-actions">
-                  {(isCorrect || isWrong || isTimeout) && (
+                  {(isCorrect || isWrong || isTimeout || (!isWhoSaid && finishCorrect !== null)) && (
                     <motion.button
                       className="game-next-btn"
-                      onClick={isCorrect ? handleNext : handleRetry}
+                      onClick={!isWhoSaid ? handleNext : (isWrong || isTimeout) ? handleRetry : handleNext}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      {isCorrect
-                        ? isLast
-                          ? 'Reveal the Code!'
-                          : 'Next Question →'
-                        : 'Try Again'}
+                      {!isWhoSaid
+                        ? (isLast ? 'Reveal the Code!' : 'Next Question →')
+                        : (isCorrect ? (isLast ? 'Reveal the Code!' : 'Next Question →') : 'Try Again')}
                     </motion.button>
                   )}
                 </div>
