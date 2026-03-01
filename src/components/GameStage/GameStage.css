@@ -283,7 +283,27 @@
   box-shadow: 0 0 20px rgba(59, 108, 245, 0.15);
 }
 
-.game-feen-answer-wrap {
+.game-feen-image-slot {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  min-height: 200px;
+}
+
+.game-feen-image-slot .game-feen-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.game-feen-image-slot .game-feen-image-clear {
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.game-feen-image-wrap.game-feen-revealed {
   border-color: var(--accent-gold);
   box-shadow: 0 0 24px rgba(212, 160, 32, 0.25);
 }
@@ -326,6 +346,10 @@
   font-weight: 600;
   color: var(--accent-green);
   margin-bottom: 0.6rem;
+}
+
+.game-feedback-answer-only {
+  font-size: 1.05rem;
 }
 
 .game-feedback-wrong {

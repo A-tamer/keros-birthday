@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import './WinScreen.css'
 
+const UNLOCK_CODE = '14 16 30'
+
 export default function WinScreen() {
   return (
     <div className="win-screen">
@@ -41,15 +43,15 @@ export default function WinScreen() {
       >
         <p className="win-code-label">Your unlock code:</p>
         <div className="win-code-digits">
-          {'4829'.split('').map((d, i) => (
+          {UNLOCK_CODE.split('').map((d, i) => (
             <motion.span
               key={i}
-              className="win-code-digit"
+              className={`win-code-digit ${d === ' ' ? 'win-code-space' : ''}`}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 + i * 0.15 }}
             >
-              {d}
+              {d === ' ' ? '\u00A0' : d}
             </motion.span>
           ))}
         </div>
@@ -61,7 +63,7 @@ export default function WinScreen() {
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
       >
-        Happy Birthday, Keroooo!
+        tm tagdeed eshterakak l7ad 24/2/2027
       </motion.p>
     </div>
   )

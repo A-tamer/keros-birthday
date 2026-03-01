@@ -77,6 +77,11 @@
   text-shadow: 0 0 20px rgba(212, 160, 32, 0.5);
 }
 
+.win-code-digit.win-code-space {
+  min-width: 0.35em;
+  font-size: 0.6em;
+}
+
 .win-message {
   font-size: clamp(1rem, 3vw, 1.2rem);
   font-weight: 700;

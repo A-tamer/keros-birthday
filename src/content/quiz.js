@@ -87,10 +87,10 @@ export const quizQuestions = [
 
 /** Finish the sentence – free-text answers. correctAnswers: array of accepted answers (trimmed, case-insensitive match). */
 export const finishSentenceQuestions = [
-  { id: 'fs1', question: '3ayez arkab …….', correctAnswers: ['el 3agala', 'el3agala', '3agala'] },
+  { id: 'fs1', question: '3ayez arkab …….', correctAnswers: ['Flooookaaaaaa', 'floookaaaaa'] },
   { id: 'fs2', question: '3ayez at3lm ……', correctAnswers: ['zyber  zecurityyyyy'] },
-  { id: 'fs3', question: 'Elfanana bt2ool " ado2 ado2 Ana elkamoon w malish kalam m3 ……', correctAnswers: ['elyansoon'] },
-  { id: 'fs4', question: '"Takol ehhh"……', correctAnswers: ['3alaaaaaa2'] },
+  { id: 'fs3', question: 'Elfanana bt2ool " ado2 ado2 Ana elkamoon w malish kalam m3 ……', correctAnswers: ['elyansooooooon'] },
+  { id: 'fs4', question: '"Takol ehhh?"……', correctAnswers: ['3alaaaaaa2'] },
 ]
 
 /** Feen (where?) – blurred image, answer revealed on button. No input, no sounds. */

@@ -88,7 +88,7 @@ export default function GameStage({ onWin }) {
 
   const handleNext = () => {
     if (isLast) {
-      playSound('final')
+      playSound('revealCode')
       onWin()
     } else {
       setIndex((i) => i + 1)
@@ -196,10 +196,27 @@ export default function GameStage({ onWin }) {
           </div>
           </>
           ) : isFeen ? (
-          /* Feen – blurred image, Reveal shows answer image, no input, no sounds */
+          /* Feen – blurred image, Reveal replaces it with answer image (fade) */
           <div className="game-feen-wrap">
-            <div className="game-feen-image-wrap">
-              <img src={question.questionImage} alt="Where?" className="game-feen-image" />
+            <div className={`game-feen-image-wrap game-feen-image-slot ${revealed ? 'game-feen-revealed' : ''}`}>
+              <motion.img
+                key="question"
+                src={question.questionImage}
+                alt="Where?"
+                className="game-feen-image game-feen-image-blur"
+                initial={false}
+                animate={{ opacity: revealed ? 0 : 1 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+              />
+              <motion.img
+                key="answer"
+                src={question.answerImage}
+                alt="Answer"
+                className="game-feen-image game-feen-image-clear"
+                initial={false}
+                animate={{ opacity: revealed ? 1 : 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+              />
             </div>
             {!revealed ? (
               <motion.button
@@ -212,19 +229,14 @@ export default function GameStage({ onWin }) {
                 Reveal
               </motion.button>
             ) : (
-              <>
-                <div className="game-feen-image-wrap game-feen-answer-wrap">
-                  <img src={question.answerImage} alt="Answer" className="game-feen-image" />
-                </div>
-                <motion.button
-                  className="game-next-btn"
-                  onClick={handleNext}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  {isLast ? 'Reveal the Code!' : 'Next Question →'}
-                </motion.button>
-              </>
+              <motion.button
+                className="game-next-btn"
+                onClick={handleNext}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {isLast ? 'Reveal the Code!' : 'Next Question →'}
+              </motion.button>
             )}
           </div>
           ) : (
@@ -278,8 +290,8 @@ export default function GameStage({ onWin }) {
                   </div>
                 )}
                 {!isWhoSaid && finishCorrect !== null && (
-                  <div className={finishCorrect ? 'game-feedback-correct' : 'game-feedback-wrong'}>
-                    {finishCorrect ? 'Correct! On to the next.' : `Not quite. One possible answer: ${question.correctAnswers[0]}`}
+                  <div className="game-feedback-correct game-feedback-answer-only">
+                    {question.correctAnswers[0]}
                   </div>
                 )}
 

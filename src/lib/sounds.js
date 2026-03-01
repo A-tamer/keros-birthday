@@ -2,6 +2,7 @@ const SOUND_URLS = {
   correct: '/sounds/true-answer.mp3',
   wrong: '/sounds/false-answer.mp3',
   final: '/sounds/true-answer.mp3',
+  revealCode: '/sounds/reveal-code.mp3',
 }
 
 const cache = {}
@@ -19,6 +20,7 @@ export function preloadSounds() {
     getAudio('correct').load()
     getAudio('wrong').load()
     getAudio('final').load()
+    getAudio('revealCode').load()
   } catch {}
 }
 
